@@ -5,7 +5,8 @@
     "node": ">= v0.4.7"
   },
   "dependencies": {
-    "hook.io": ">= 0.7.7",
-    "hook.io-webserver": ">= 0.4.0"
+    "hook.io": "git://github.com/hookio/hook.io.git",
+    "hook.js": "git://github.com/hookio/hook.js.git",
+    "hook.io-webserver": "git://github.com/hookio/webserver.git"
   }
 }

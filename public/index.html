@@ -7,133 +7,147 @@
     padding: 0;
     margin: 0;
   }
-  #canvasElement {
-    /*border: 1px solid #ddd; */
-  }
   </style>
+  <script type="text/javascript" src="/javascripts/hook.js"></script>  
 </head>
 <body>
   <canvas id="canvasElement"></canvas>
+
   <script type="text/javascript">
+  
+  (function() {
+    function Knobs(canvasElementId) {
+      var self = this;
+      var canvas = document.getElementById(canvasElementId);
+      canvas.width = 700;
+      canvas.height = 200;
+      this.ctx = canvas.getContext('2d');
+      this.ctx.fillStyle = 'rgba(64,64,64,1)';
+      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);      
 
+      var KNOB_HEIGHT = 100;
+      var LINE_COLORS = ['rgb(192,0,0)','rgb(192,192,0)','rgb(0,192,0)',
+                         'rgb(0,192,192)','rgb(0,0,192)','rgb(192,0,192)'];
 
-  function Knobs(canvasElementId) {
-    var self = this;
-    var canvas = document.getElementById(canvasElementId);
-    canvas.width = 700;
-    canvas.height = 200;
-    this.ctx = canvas.getContext('2d');
-    this.ctx.fillStyle = 'rgba(64,64,64,1)';
-    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);      
-
-    var KNOB_HEIGHT = 100;
-    var LINE_COLORS = ['rgb(192,0,0)','rgb(192,192,0)','rgb(0,192,0)',
-                       'rgb(0,192,192)','rgb(0,0,192)','rgb(192,0,192)'];
-
-    this.drawKnob = function (x, y, value)  {
-      var ctx = this.ctx;
-      var r=20;
-      ctx.lineWidth = 15;
-      ctx.beginPath();
-      ctx.arc(x, y, r, -5*Math.PI/4, -5*Math.PI/4 + 3*Math.PI/2*value/1023, false);
-      ctx.strokeStyle = 'rgb(255,0,255)';      
-      ctx.stroke();
-      ctx.closePath();
-      
-      ctx.lineWidth = 1;
-      ctx.font = 'italic 12px "Unknown Font", sans-serif';
-      ctx.textAlign = "center";
-      //ctx.fillText(value, x, y+30);
-      ctx.strokeText(value, x, y+30);
-      
-    }
-
-    this.resize = function(width, height) {
-      var ctx = self.ctx;
-      ctx.canvas.width = width;
-      ctx.canvas.height = height;      
-    }
-
-    var HISTORY_SIZE = 500;
-    var knob_history = new Array(HISTORY_SIZE * 6);
-    var current = 0;
-
-    this.update = function(values) {
-      for(var i=0; i<6; i++) {
-        knob_history[HISTORY_SIZE*i + current] = values[i];
-      }
-      current = (current + 1) % HISTORY_SIZE;
-
-      draw();
-    }
-
-    var wipeCharts = function() {
-      var ctx = self.ctx;
-
-      ctx.fillStyle = 'rgba(64,64,64,1)';
-      ctx.fillRect(0, KNOB_HEIGHT, ctx.canvas.width, ctx.canvas.height - KNOB_HEIGHT);
-    }
-
-    var draw = function() {
-      var values = knob_history[knob_history.length - 1];
-
-      var ctx = self.ctx;
-
-      if(current !== -1) {
-        ctx.fillStyle = 'rgba(64,64,64,0.5)';
-        ctx.fillRect(0, 0, ctx.canvas.width, KNOB_HEIGHT);
-        for(var nx=0; nx<6; nx++) {
-          self.drawKnob(ctx.canvas.width/2 + 100*(nx+1)-350, 50, knob_history[HISTORY_SIZE*nx + (current + HISTORY_SIZE - 1) % HISTORY_SIZE]);
-        }
-      }
-
-      var sx = (ctx.canvas.width - 10) * 1.0 / (HISTORY_SIZE - 1);
-      var hh = Math.floor((ctx.canvas.height - KNOB_HEIGHT - 10) / 6);
-      var sy = (ctx.canvas.height - KNOB_HEIGHT - 10) / 6 * 0.95 - 5;
-      var y = KNOB_HEIGHT + 5;
-
-      wipeCharts();
-      ctx.lineWidth = 2;
-      for(var k=0,l=0; k<6; k++, l+=HISTORY_SIZE) {
-        y += hh;
+      this.drawKnob = function (x, y, value)  {
+        var ctx = this.ctx;
+        var r=20;
+        ctx.lineWidth = 15;
         ctx.beginPath();
-//        ctx.moveTo(x, y);
-        for(var i=0,j=current; i<HISTORY_SIZE; i++) {
-          var v = knob_history[l + j];
-          var x = 5 + i * sx;
-          ctx.lineTo(x, y - sy * v / 1023)
-          
-          if(++j === HISTORY_SIZE) { j = 0; }
-        }
-        ctx.strokeStyle = LINE_COLORS[k];
+        ctx.arc(x, y, r, -5*Math.PI/4, -5*Math.PI/4 + 3*Math.PI/2*value/1023, false);
+        ctx.strokeStyle = 'rgb(255,0,255)';      
         ctx.stroke();
         ctx.closePath();
+      
+        ctx.lineWidth = 1;
+        ctx.font = 'italic 12px "Unknown Font", sans-serif';
+        ctx.textAlign = "center";
+        //ctx.fillText(value, x, y+30);
+        ctx.strokeText(value, x, y+30);
+      
       }
-    }
-    
-    this.resize(window.innerWidth, window.innerHeight);
 
-  }
+      this.resize = function(width, height) {
+        var ctx = self.ctx;
+        ctx.canvas.width = width;
+        ctx.canvas.height = height;      
+      }
+
+      var HISTORY_SIZE = 500;
+      var knob_history = new Array(HISTORY_SIZE * 6);
+      var current = 0;
+
+      this.update = function(values) {
+        for(var i=0; i<6; i++) {
+          knob_history[HISTORY_SIZE*i + current] = values[i];
+        }
+        current = (current + 1) % HISTORY_SIZE;
+
+        draw();
+      }
+
+      var wipeCharts = function() {
+        var ctx = self.ctx;
+
+        ctx.fillStyle = 'rgba(64,64,64,1)';
+        ctx.fillRect(0, KNOB_HEIGHT, ctx.canvas.width, ctx.canvas.height - KNOB_HEIGHT);
+      }
+
+      var draw = function() {
+        var values = knob_history[knob_history.length - 1];
+
+        var ctx = self.ctx;
+
+        if(current !== -1) {
+          ctx.fillStyle = 'rgba(64,64,64,0.5)';
+          ctx.fillRect(0, 0, ctx.canvas.width, KNOB_HEIGHT);
+          for(var nx=0; nx<6; nx++) {
+            self.drawKnob(ctx.canvas.width/2 + 100*(nx+1)-350, 50, knob_history[HISTORY_SIZE*nx + (current + HISTORY_SIZE - 1) % HISTORY_SIZE]);
+          }
+        }
+
+        var sx = (ctx.canvas.width - 10) * 1.0 / (HISTORY_SIZE - 1);
+        var hh = Math.floor((ctx.canvas.height - KNOB_HEIGHT - 10) / 6);
+        var sy = (ctx.canvas.height - KNOB_HEIGHT - 10) / 6 * 0.95 - 5;
+        var y = KNOB_HEIGHT + 5;
+
+        wipeCharts();
+        ctx.lineWidth = 2;
+        for(var k=0,l=0; k<6; k++, l+=HISTORY_SIZE) {
+          y += hh;
+          ctx.beginPath();
+  //        ctx.moveTo(x, y);
+          for(var i=0,j=current; i<HISTORY_SIZE; i++) {
+            var v = knob_history[l + j];
+            var x = 5 + i * sx;
+            ctx.lineTo(x, y - sy * v / 1023)
+          
+            if(++j === HISTORY_SIZE) { j = 0; }
+          }
+          ctx.strokeStyle = LINE_COLORS[k];
+          ctx.stroke();
+          ctx.closePath();
+        }
+      }
+    
+      this.resize(window.innerWidth, window.innerHeight);
+
+    }
   
-  var knobs = new Knobs("canvasElement");
+    var knobs = new Knobs("canvasElement");
+
+    var knobData = [0,0,0,0,0,0];
+
+    var hook = new (require('/hook.js').Hook)();
+    hook.on('serial::knobs', function(data){
+      Object.keys(data).forEach(function(key) {
+        var value = parseInt(data[key], 10);
+        var k = parseInt(key, 10);
+        if (k>=0 && k<=5) knobData[k]=value;
+      });
+      console.log(knobData);
+      knobs.update(knobData);
+    });
+    hook.start();
+  })();
 
   window.onresize = function(){knobs.resize(window.innerWidth, window.innerHeight)}
 
 
   //knobs.iterate();
-  var i = 0;
-  setInterval(function() {
-      i += 1;
-      knobs.update([
-        Math.floor(-Math.sin(self.i*0.11)*512+512),         
-        Math.floor(Math.sin(self.i*0.11)*512+512),
-        Math.floor((Math.sin(self.i*0.21)*512+Math.cos(self.i*0.1)*512)/2+512),
-        Math.floor(Math.sin(self.i*0.22)*512+512),
-        Math.floor(Math.sin(self.i*0.32)*512+512),
-        Math.floor(Math.sin(self.i*0.33)*512+512)]);
-    }, 100);
-
-  
+  // var i = 0;
+  // setInterval(function() {
+  //     i += 1;
+  //     knobs.update([
+  //       Math.floor(-Math.sin(self.i*0.11)*512+512),         
+  //       Math.floor(Math.sin(self.i*0.11)*512+512),
+  //       Math.floor((Math.sin(self.i*0.21)*512+Math.cos(self.i*0.1)*512)/2+512),
+  //       Math.floor(Math.sin(self.i*0.22)*512+512),
+  //       Math.floor(Math.sin(self.i*0.32)*512+512),
+  //       Math.floor(Math.sin(self.i*0.33)*512+512)]);
+  //   }, 100);
+  // 
+  // 
   </script>
 </body>
 </html>
