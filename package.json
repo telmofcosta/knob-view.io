@@ -1,0 +1,11 @@
+{
+  "name": "nubstep",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">= v0.4.7"
+  },
+  "dependencies": {
+    "hook.io": ">= 0.7.7",
+    "hook.io-webserver": ">= 0.4.0"
+  }
+}
