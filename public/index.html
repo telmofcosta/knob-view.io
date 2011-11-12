@@ -42,7 +42,6 @@
         ctx.lineWidth = 1;
         ctx.font = 'italic 12px "Unknown Font", sans-serif';
         ctx.textAlign = "center";
-        //ctx.fillText(value, x, y+30);
         ctx.strokeText(value, x, y+30);
       
       }
@@ -57,7 +56,8 @@
       var knob_history = new Array(HISTORY_SIZE * 6);
       var current = 0;
 
-      this.update = function(values) {
+      self.update = function(values) {
+        console.log("values", values);
         for(var i=0; i<6; i++) {
           knob_history[HISTORY_SIZE*i + current] = values[i];
         }
@@ -96,7 +96,6 @@
         for(var k=0,l=0; k<6; k++, l+=HISTORY_SIZE) {
           y += hh;
           ctx.beginPath();
-  //        ctx.moveTo(x, y);
           for(var i=0,j=current; i<HISTORY_SIZE; i++) {
             var v = knob_history[l + j];
             var x = 5 + i * sx;
@@ -125,29 +124,25 @@
         var k = parseInt(key, 10);
         if (k>=0 && k<=5) knobData[k]=value;
       });
-      console.log(knobData);
       knobs.update(knobData);
     });
+    
     hook.start();
-  })();
+    window.onresize = function(){knobs.resize(window.innerWidth, window.innerHeight)}
 
-  window.onresize = function(){knobs.resize(window.innerWidth, window.innerHeight)}
+    //var i = 0;
+    //setInterval(function() {
+    //  i += 1;
+    //  knobs.update([
+    //    Math.floor(-Math.sin(i*0.11)*512+512),         
+    //    Math.floor( Math.sin(i*0.11)*512+512),
+    //    Math.floor((Math.sin(i*0.21)*512+Math.cos(i*0.1)*512)/2+512),
+    //    Math.floor( Math.sin(i*0.22)*512+512),
+    //    Math.floor( Math.sin(i*0.32)*512+512),
+    //    Math.floor( Math.sin(i*0.33)*512+512)]);
+    //  }, 100);
+    //})();
 
-
-  //knobs.iterate();
-  // var i = 0;
-  // setInterval(function() {
-  //     i += 1;
-  //     knobs.update([
-  //       Math.floor(-Math.sin(self.i*0.11)*512+512),         
-  //       Math.floor(Math.sin(self.i*0.11)*512+512),
-  //       Math.floor((Math.sin(self.i*0.21)*512+Math.cos(self.i*0.1)*512)/2+512),
-  //       Math.floor(Math.sin(self.i*0.22)*512+512),
-  //       Math.floor(Math.sin(self.i*0.32)*512+512),
-  //       Math.floor(Math.sin(self.i*0.33)*512+512)]);
-  //   }, 100);
-  // 
-  // 
   </script>
 </body>
 </html>
